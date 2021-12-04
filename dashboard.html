@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <style>
+    .background {
+      background: #e3e3e3;
+
+      background: -webkit-linear-gradient(to bottom, rgb(255, 255, 255), rgba(63, 95, 114, 0.65));
+      background: linear-gradient(to bottom, rgb(255, 255, 255), rgba(63, 95, 114, 0.65));
+
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    .card {
+      outline: ridge black 4px;
+    }
+
+    #alerts-list ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    #alerts-list ul li {
+      margin-bottom: 0.5rem;
+    }
+
+    .btn a {
+      color: #000;
+    }
+
+    a:link,
+    a:visited {
+      text-decoration: none;
+    }
+
+    a:hover,
+    a:active {
+      text-decoration: underline;
+    }
+  </style>
+  <link rel="icon" type="image/png"
+    href="https://pbs.twimg.com/profile_images/1163811477725351937/sDYrfrpt_400x400.jpg">
+  <title>Dashboard</title>
+</head>
+
+<body class="">
+  <div class="background">
+    <div class="container pt-4">
+
+      <div class="card mb-4 text-center bg-light text-dark shadow ">
+        <div class="card-body">
+          <h4 class="card-title mb-3">Home Monitoring Dashboard</h4>
+          <p class="card-text">Ross Payne</p>
+        </div>
+      </div>
+
+
+      <div class="d-flex justify-content-center mb-5">
+        <a href="/demo" style="text-decoration: none;">
+          <button class="btn btn-info p-2 mb-2 border border-dark border-2">Demo Page</button>
+        </a>
+      </div>
+
+
+      <div class="row mb-5">
+
+        <div class="col-sm-1"></div>
+        <!--end col-->
+
+        <div class="col-sm-4">
+
+          <div id="temp-card" class="card mb-4 text-center bg-gradient shadow">
+            <div class="card-body">
+              <h3 class="card-title mb-3">Temperature &#x1f321;</h3>
+              <p class="card-text" id="tempc">0 &deg;C</p>
+              <p class="card-text" id="tempf">0 &deg;F</p>
+            </div>
+          </div>
+
+        </div>
+        <!--end col-->
+
+        <div class="col-sm-2"></div>
+        <!--end col-->
+
+
+        <div class="col-sm-4">
+
+          <div class="card mb-4 text-center bg-info bg-gradient shadow">
+            <div class="card-body">
+              <h3 class="card-title mb-4">Humidity &#x1f4a7;</h3>
+              <p class="card-text" id="humidity">Humidity: 0 %</p>
+            </div>
+          </div>
+
+        </div>
+        <!--end col-->
+
+
+
+      </div>
+      <!--end row-->
+
+      <hr class="mb-5 bg-dark" style="height: 5px">
+
+      <div class="row">
+
+        <div class="col-sm-1"></div>
+        <!--end col-->
+
+        <div class="col-sm-4">
+
+          <div class="card mb-4 text-center bg-primary bg-gradient shadow" id="monitor-card">
+            <div class="card-body">
+              <h3 class="card-title mb-3" id="monitor-title">Monitoring &#x1f575;</h3>
+              <form action="/enable" method="post">
+                <button type="submit" name="enable" id="enable-btn" value="enable"
+                  class="btn btn-success p-2 mx-2 border border-dark border-2">Enable</button>
+                <button type="submit" name="disable" id="disable-btn" value="disable"
+                  class="btn btn-secondary p-2 mx-2 border border-dark border-2">Disable</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+        <!--end col-->
+
+        <div class="col-sm-1"></div>
+        <!--end col-->
+
+        <div class="col-sm-6">
+
+          <div class="card mb-4 text-center bg-light bg-gradient shadow" id="alerts-card">
+            <div class="card-body">
+              <h3 class="card-title">Alerts &#x1f6a8;</h3>
+              <div>
+                <button class="btn btn-info p-2 mb-2 border border-dark border-2"><a href="/twitter"
+                    style="text-decoration: none;">Twitter Feed</a></button>
+              </div>
+              <button class="btn btn-secondary p-2 mb-3 border border-dark border-2" id="clear-btn">Clear</button>
+              <div id="alerts-list">
+                <h4 class="card-text mb-4">None</h4>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!--end col-->
+
+      </div>
+      <!--end row-->
+
+
+    </div>
+    <!--end container-->
+  </div>
+
+  <script>
+
+    function delay(time) {
+      return new Promise(resolve => setTimeout(resolve, time))
+    }
+
+    async function getData() {
+      while (true) {
+        let resAlerts;
+        let resData;
+
+        // fetch data from API
+        try {
+          resAlerts = await fetch('alerts');
+          resData = await fetch('data');
+        } catch (error) {
+          // something bad happened, try again in 5 sec
+          console.log("ERROR GETTING RESPONSE FROM SERVER:", error);
+          await delay(5000);
+        }
+
+        if (resData.status != 200 || resAlerts.status != 200) {
+          // bad response, try again in 5 sec
+          console.log("ERROR: NO DATA RETURNED FROM SERVER");
+          await delay(5000);
+        } else {
+          // got a response
+          let alertsJSON = await resAlerts.json()
+          let sensorJSON = await resData.json()
+          alertsObject = JSON.parse(alertsJSON);
+          dataObject = JSON.parse(sensorJSON)
+
+          // check data in browser console
+          console.log("Data from server:", dataObject, alertsObject);
+
+          // update DOM elements
+          document.getElementById("humidity").innerText = `Humidity: ${dataObject.humidity} %`;
+          styleTempCard(dataObject.tempC, dataObject.tempF);
+          styleAlertsCard(alertsObject);
+          styleMonitorCard(dataObject.armed)
+
+          // refresh data every X milliseconds
+          await delay(500);
+        }
+      }
+    }
+
+    getData();
+
+
+    // button listener to arm system and style monitoring card
+
+    document.getElementById("enable-btn").addEventListener("click", async (e) => {
+      try {
+        e.preventDefault();
+        // make request to "enable" endpoint to arm system
+        let res = await fetch("enable", {
+          method: "post",
+          body: {}
+        });
+        console.log(res);
+        if (res.status == 200) {
+          styleMonitorCard(true)
+        }
+      } catch (error) {
+        console.log(`Error when submitting enable request: ${error}`);
+      }
+    })
+
+    // button listener to disarm system and style monitoring card
+
+    document.getElementById("disable-btn").addEventListener("click", async (e) => {
+      try {
+        e.preventDefault();
+        // make request to "disable" endpoint to disarm system
+        let res = await fetch("disable", {
+          method: "post",
+          body: {}
+        });
+        console.log(res);
+        if (res.status == 200) {
+          styleMonitorCard(false)
+        }
+      } catch (error) {
+        console.log(`Error when submitting disable request: ${error}`);
+      }
+    })
+
+    document.getElementById("clear-btn").addEventListener("click", async (e) => {
+      try {
+        e.preventDefault();
+
+        const alertsCard = document.getElementById("alerts-card");
+        const alertsList = document.getElementById("alerts-list");
+        const clearButton = document.getElementById("clear-btn")
+
+        // make request to "clearalerts" endpoint to clear alerts dict and DOM element
+        let res = await fetch("clearalerts", {
+          method: "post",
+          body: {}
+        });
+        if (res.status == 200) {
+          alertsList.innerHTML = `<h4 class="card-text mb-4">None</h4>`
+          alertsList.classList.remove("text-light")
+          alertsList.classList.add("text-dark")
+          alertsCard.classList.add("bg-light")
+          alertsCard.classList.remove("bg-danger")
+          clearButton.classList.remove("btn-light")
+          clearButton.classList.add("btn-secondary")
+        }
+      } catch (error) {
+        console.log(`Error when submitting clear alerts request: ${error}`);
+      }
+    })
+
+    function styleMonitorCard(armed) {
+      const monitorcard = document.getElementById("monitor-card");
+      const monitortitle = document.getElementById("monitor-title");
+      if (armed) {
+        monitorcard.classList.add("bg-primary");
+        monitorcard.classList.remove("bg-light");
+        monitortitle.classList.remove("text-muted");
+        // stupid hack to add an emoji
+        monitortitle.innerText = "Monitoring " + String.fromCodePoint(0x1f575);
+      } else {
+        monitorcard.classList.remove("bg-primary");
+        monitorcard.classList.add("bg-light");
+        monitortitle.classList.add("text-muted");
+        // stupid hack to add an emoji
+        monitortitle.innerText = "Monitoring Disabled " + String.fromCodePoint(0x1f648);
+      }
+    }
+
+    function styleTempCard(tempC, tempF) {
+
+      const tempCard = document.getElementById("temp-card");
+      // update DOM with new data
+      document.getElementById("tempf").innerText = `${tempF} \u00b0F`;
+      document.getElementById("tempc").innerText = `${tempC} \u00b0C`;
+
+      // color temp card based on sensor reading
+      let hue = 260 / (1 + (2.71828 ** (-1 + 0.1 * tempC)))
+      tempCard.style.backgroundColor = `hsl(${hue}, 70%, 50%)`
+
+      if (tempC < -2) {
+        tempCard.style.color = "white";
+      } else {
+        tempCard.style.color = "black";
+      }
+
+    }
+
+    function styleAlertsCard(alertsObject) {
+
+      const alertsCard = document.getElementById("alerts-card");
+      const alertsList = document.getElementById("alerts-list");
+      const clearButton = document.getElementById("clear-btn");
+
+      // style alerts card based on number of alerts
+      numAlerts = Object.keys(alertsObject).length
+      let alertsHTML = ""
+
+      if (numAlerts > 0) {
+
+        alertsHTML = `<h4 class="card-text mb-4">${numAlerts} ${numAlerts == 1 ? "Alert!" : "Alerts!"} </h4><ul>`;
+
+        // build list of alerts from data object
+        for (let x in alertsObject) {
+          alertsHTML += `<li><strong>${x} :</strong> ${alertsObject[x]}</li>`
+        }
+
+        alertsHTML += "</ul>";
+
+        alertsCard.classList.remove("bg-light")
+        alertsCard.classList.add("bg-danger")
+        alertsList.classList.remove("text-dark")
+        alertsList.classList.add("text-light")
+        clearButton.classList.remove("btn-secondary")
+        clearButton.classList.add("btn-light")
+
+      } else {
+        alertsHTML = `<h4 class="card-text mb-4">None</h4>`;
+        alertsCard.classList.remove("bg-danger")
+        alertsCard.classList.add("bg-light")
+        alertsList.classList.remove("text-light")
+        alertsList.classList.add("text-dark")
+        clearButton.classList.remove("btn-light")
+        clearButton.classList.add("btn-secondary")
+      }
+
+      alertsList.innerHTML = alertsHTML;
+    }
+  </script>
+</body>
+
+</html>
