@@ -11,8 +11,9 @@ from twitterconfig import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_KEY, ACCESS_SECR
 
 api = Twython(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_KEY, ACCESS_SECRET)
 
-message = sys.argv[1]
-# print(f"message to tweet: '{message}'")
+args = sys.argv[1:]
+message = ' '.join(args)
+# print(f"🦆 message to tweet: '{message}'")
 
 date = datetime.now()
 timestamp = date.strftime("%a %b %d, %Y %#I:%M:%S %p")
