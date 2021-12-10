@@ -49,8 +49,8 @@ def fakemonitor():
             differenceY = abs(gyro[1] - gyroY)
             # print(f"gyro X difference:\t{differenceX}\ngyro Y difference:\t{differenceY}\n********************************************\n\n")
             if differenceX > 20 or differenceY > 20:
-                fakealert("Security device moved")
-                tweet("Security device moved")
+                fakealert("Monitoring device moved")
+                tweet("Monitoring device moved")
 
             gyro[0] = gyroX
             gyro[1] = gyroY
@@ -59,7 +59,8 @@ def fakemonitor():
 
 def tweet(message):
     print("🟡 tweeting alert!!!", message)
-    #os.system("python3 twitterbot.py")
+    # command = f"python3 twitterbot.py '{message}'"
+    #os.system(command)
 
 
 # def monitor():
