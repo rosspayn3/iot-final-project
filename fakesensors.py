@@ -1,3 +1,9 @@
+# *****************************************
+# Name:         Ross Payne & Jacob Baltazar
+# Problem Set:  Final Project
+# Due Date:     Dec 16, 2021
+# *****************************************
+
 import random
 
 def getFakeDistance():

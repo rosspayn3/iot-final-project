@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+
+# *****************************************
+# Name:         Ross Payne & Jacob Baltazar
+# Problem Set:  Final Project
+# Due Date:     Dec 16, 2021
+# *****************************************
+
 import os
 import RPi.GPIO as GPIO
 import cherrypy
@@ -12,7 +19,7 @@ def setup():
         global ds18b20
         for i in os.listdir('/sys/bus/w1/devices'):
                 if i != 'w1_bus_master1':
-                        ds18b20 = '28-01201d270e10'
+                        ds18b20 = '28-01201f7b8363'
 
 distanceSensor = DistanceSensor(echo=22, trigger=23)  # board pins 15, 16
 buzzer = Buzzer(24, active_high=False)  # board pin 18
