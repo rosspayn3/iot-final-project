@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # *****************************************
-# Name:         Ross Payne & Jacob Baltazar
+# Name:         Ross Payne
 # Problem Set:  Final Project
 # Due Date:     Dec 16, 2021
 # *****************************************
