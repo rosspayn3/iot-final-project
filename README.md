@@ -26,4 +26,6 @@
 4. GPIO23 - HC-SR04 ultrasonic sensor `trigger`
 5. GPIO24 - Active buzzer
 6. GPIO25 - Button
-7. USB port - Webcam
+7. SDA1 - MPU-6050 Gyro Module `SDA`
+8. SCL1 - MPU-6050 Gyro Module `SCL`
+9. USB port - Webcam
